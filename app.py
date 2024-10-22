@@ -37,21 +37,9 @@ class Appointment(db.Model):
     hospital = db.Column(db.String(100), nullable=False)
 
 # Initialize the database
-db.create_all()
+with app.app_context():
+    db.create_all()
 
-# Seed data for vaccine schedules and hospitals
-def seed_data():
-    if not VaccineSchedule.query.first():
-        # Adding vaccine schedules for baby
-        baby_vaccines = [
-            VaccineSchedule(recipient_type='baby', schedule='BCG, Hepatitis B', week_age='At Birth'),
-            VaccineSchedule(recipient_type='baby', schedule='Polio, DPT, Hib', week_age='6 weeks'),
-            VaccineSchedule(recipient_type='baby', schedule='MMR, Varicella', week_age='12 months')
-        ]
-        db.session.add_all(baby_vaccines)
-        db.session.commit()
-
-seed_data()
 
 # USSD endpoint
 @app.route('/ussd', methods=['POST'])
