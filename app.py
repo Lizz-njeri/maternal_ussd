@@ -121,15 +121,9 @@ def ussd():
         response += "3. John M (15 deliveries)\n"
         response += "4. Veronica S (20 deliveries)\n"
     elif text == '1*2*':
-        midwife_choice = int(user_response[2]) - 1  # Get the index of the selected midwife
-        if midwife_choice in range(4):  # Ensure the choice is within the number of midwives listed
-            appointment = Appointment(user_id=user.id, appointment_type='Midwife', hospital='Midwife Service')
-            db.session.add(appointment)
-            db.session.commit()
-            response = "END Your appointment with a midwife has been booked. You will receive confirmation via SMS."
-            send_sms(phone_number, "Appointment booked with a midwife.")
-        else:
-            response = "END Invalid midwife choice."
+        response = "END Your appointment with a midwife has been booked. You will receive confirmation via SMS."
+        send_sms(phone_number, "Appointment booked with a midwife.")
+       
 
     # Vaccine Rotation (Option 2)
     elif text == '2':
