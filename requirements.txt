@@ -1,4 +1,4 @@
 Flask
 africastalking
 flask-sqlalchemy
-dotenv
+python-dotenv
