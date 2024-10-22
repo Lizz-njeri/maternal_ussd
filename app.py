@@ -79,39 +79,26 @@ def ussd():
         response+= "2. Mombasa\n"
         response+= "3. Kisumu\n"
     
-    elif text == '1*1*':
-        county = user_response[1]
-        hospitals = {
-            'Nairobi': ['Nairobi Hospital', 'Aga Khan Hospital', 'Karen Hospital'],
-            'Kisumu': ['Kisumu County Hospital', 'Jaramogi Oginga Odinga Teaching and Referral Hospital'],
-            # Add more counties and their hospitals as needed
-        }
-        available_hospitals = hospitals.get(county, [])
-        
-        if available_hospitals:
-            response = "CON Available Hospitals:\n"
-            for index, hospital in enumerate(available_hospitals):
-                response += f"{index + 1}. {hospital}\n"
-        else:
-            response = "END No hospitals found for the given county."
+    elif text == '1*1*1':
+        response = "CON Available Hospitals in Nairobi"
+        response+= "1. Karen Hospital \n"
+        response+= "2. Komarock hospital \n"
+        response+= "3. Kenyatta hospital"
+    elif text == '1*1*2':
+        response = "CON Available Hospitals in Mombasa"
+        response+= "1. Mama Ngina Hospital \n"
+        response+= "2. Pumwani hospital \n"
+        response+= "3. Kwale hospital"
+    elif text == '1*1*3':
+        response = "CON Available Hospitals in Kisumu"
+        response+= "1. Oginga Odinga Hospital \n"
+        response+= "2. General hospital \n"
+        response+= "3. Marie stopes hospital"
+    
+    elif text in ['1*1*1*1','1*1*1*2','1*1*1*3','1*1*2*1','1*1*2*2','1*1*2*3','1*1*3*1','1*1*3*2','1*1*3*3']:
+        response="END Your appointment with a doctor has been booked. You will receive details via SMS"
+        send_sms(phone_number, "You appointed has been booked at 9am with Dr. Anne Wairimu")
 
-        hospital_choice = int(user_response[2]) - 1  # Get the index of the selected hospital
-        county = user_response[1]
-        hospitals = {
-            'Nairobi': ['Nairobi Hospital', 'Aga Khan Hospital', 'Karen Hospital'],
-            'Kisumu': ['Kisumu County Hospital', 'Jaramogi Oginga Odinga Teaching and Referral Hospital'],
-        }
-        available_hospitals = hospitals.get(county, [])
-        
-        if 0 <= hospital_choice < len(available_hospitals):
-            appointment = Appointment(user_id=user.id, appointment_type='Doctor', hospital=available_hospitals[hospital_choice])
-            db.session.add(appointment)
-            db.session.commit()
-            response = "END Your appointment with a doctor at {} has been booked. You will receive confirmation via SMS.".format(available_hospitals[hospital_choice])
-            send_sms(phone_number, "Appointment booked with a doctor at {}.".format(available_hospitals[hospital_choice]))
-        else:
-            response = "END Invalid hospital choice."
-        
     
     # Sub-option for booking a Midwife (Option 1*2)
     elif text == '1*2':
@@ -120,9 +107,10 @@ def ussd():
         response += "2. Mary J (28 deliveries)\n"
         response += "3. John M (15 deliveries)\n"
         response += "4. Veronica S (20 deliveries)\n"
-    elif text == '1*2*':
+
+    elif text in ['1*2*1','1*2*2','1*2*3','1*2*4']:
         response = "END Your appointment with a midwife has been booked. You will receive confirmation via SMS."
-        send_sms(phone_number, "Appointment booked with a midwife.")
+        send_sms(phone_number, "Appointment booked with a midwife. They will contact you for further details.")
        
 
     # Vaccine Rotation (Option 2)
@@ -141,9 +129,7 @@ def ussd():
     # Set Baby Age (Option 2*2)
     elif text == '2*2':
         response = "CON Please enter your baby's age in months:"
-        baby_age_months = int(user_response[1])
-        user.baby_age = user_response[1]
-        db.session.commit()
+        baby_age_months =[]
         
         # Recommend the next vaccine based on age
         if baby_age_months < 1:
