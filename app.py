@@ -26,7 +26,6 @@ class User(db.Model):
 
 class VaccineSchedule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    recipient_type = db.Column(db.String(10), nullable=False)  # 'mother' or 'baby'
     schedule = db.Column(db.String(255), nullable=False)
     week_age = db.Column(db.String(50), nullable=False)  # Age for baby
 
@@ -121,17 +120,18 @@ def ussd():
     
     # Baby's Vaccine Schedule (Option 2*1)
     elif text == '2*1':
-        vaccines = VaccineSchedule.query.filter_by(recipient_type='baby').all()
-        response = "END Baby's Vaccines:\n"
-        for item in vaccines:
-            response += f"{item.week_age}: {item.schedule}\n"
+        schedules = VaccineSchedule.query.all()
+        response = "END Vaccine Schedule:\n"
+        for schedule in schedules:
+            response += f"{schedule.week_age}: {schedule.schedule}\n"
     
     # Set Baby Age (Option 2*2)
     elif text == '2*2':
-        response = "CON Please enter your baby's age in months:"
-        baby_age_months =[]
-        
+        response = "CON Please enter your baby's age in months:"    
         # Recommend the next vaccine based on age
+    elif text.startswith('2*2'):
+        baby_age_months = int(text.split('*')[2])  # Extracting the age from the text
+       
         if baby_age_months < 1:
             response = "END Next vaccine due: BCG, Hepatitis B at Birth."
         elif 1 <= baby_age_months < 6:
@@ -141,12 +141,13 @@ def ussd():
         else:
             response = "END No further vaccines due at this time."
 
-        # Set reminder (this can be expanded with a real reminder system)
+        # Send reminder 
         send_sms(phone_number, f"Reminder: Next vaccine due for your baby in {max(0, 6 - baby_age_months)} months.")
 
+   
     # Emergency Contacts (Option 3)
     elif text == '3':
-        response = "END Emergency Contacts:\n"
+        response = "CON Emergency Contacts:\n"
         response += "1. Hospital\n"
         response += "2. Midwife\n"
     elif text == '3*1':
