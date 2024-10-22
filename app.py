@@ -1,12 +1,15 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 import africastalking
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
+load_dotenv()
 # Africa's Talking credentials
-username = "your_username"
-api_key = "your_api_key"
+username = os.getenv("username")
+api_key = os.getenv("api_key")
 africastalking.initialize(username, api_key)
 sms = africastalking.SMS
 
@@ -156,9 +159,6 @@ def ussd():
     # Set Baby Age (Option 2*2)
     elif text == '2*2':
         response = "CON Please enter your baby's age in months:"
-
-    # Store baby's age and recommend next vaccine based on age
-    elif len(user_response) == 2 and user_response[0] == '2' and user_response[1].isdigit():
         baby_age_months = int(user_response[1])
         user.baby_age = user_response[1]
         db.session.commit()
