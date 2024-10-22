@@ -83,18 +83,12 @@ def ussd():
 
     # Sub-option for booking a Doctor (Option 1*1)
     elif text == '1*1':
-        response = "CON Please indicate your county (e.g., Nairobi, Kisumu)"
+        response = "CON Please select your country \n"
+        response+= "1. Nairobi\n"
+        response+= "2. Mombasa\n"
+        response+= "3. Kisumu\n"
     
-    # Sub-option for booking a Midwife (Option 1*2)
-    elif text == '1*2':
-        response = "CON Available Midwives\n"
-        response += "1. Ashley W (10 deliveries)\n"
-        response += "2. Mary J (28 deliveries)\n"
-        response += "3. John M (15 deliveries)\n"
-        response += "4. Veronica S (20 deliveries)\n"
-
-    # Get hospitals based on county (Option 1*1*<county>)
-    elif len(user_response) == 2 and user_response[0] == '1' and user_response[1]:  # Check if county is provided
+    elif text == '1*1*':
         county = user_response[1]
         hospitals = {
             'Nairobi': ['Nairobi Hospital', 'Aga Khan Hospital', 'Karen Hospital'],
@@ -110,8 +104,6 @@ def ussd():
         else:
             response = "END No hospitals found for the given county."
 
-    # Book selected doctor appointment (Option 1*1*<county>*<hospital_choice>)
-    elif len(user_response) == 3 and user_response[0] == '1' and user_response[1] and user_response[2].isdigit():
         hospital_choice = int(user_response[2]) - 1  # Get the index of the selected hospital
         county = user_response[1]
         hospitals = {
@@ -128,9 +120,16 @@ def ussd():
             send_sms(phone_number, "Appointment booked with a doctor at {}.".format(available_hospitals[hospital_choice]))
         else:
             response = "END Invalid hospital choice."
-
-    # Book selected midwife appointment (Option 1*2*<midwife_choice>)
-    elif len(user_response) == 3 and user_response[0] == '1' and user_response[1] == '2' and user_response[2].isdigit():
+        
+    
+    # Sub-option for booking a Midwife (Option 1*2)
+    elif text == '1*2':
+        response = "CON Available Midwives\n"
+        response += "1. Ashley W (10 deliveries)\n"
+        response += "2. Mary J (28 deliveries)\n"
+        response += "3. John M (15 deliveries)\n"
+        response += "4. Veronica S (20 deliveries)\n"
+    elif text == '1*2*':
         midwife_choice = int(user_response[2]) - 1  # Get the index of the selected midwife
         if midwife_choice in range(4):  # Ensure the choice is within the number of midwives listed
             appointment = Appointment(user_id=user.id, appointment_type='Midwife', hospital='Midwife Service')
@@ -185,6 +184,9 @@ def ussd():
     elif text == '3*1':
         response = "END Doctor on call is Dr. Vamos (Gynecologist). Contact: +25471234567"
         send_sms(phone_number, "Doctor on call is Dr. Vamos (Gynecologist). Contact: +25471234567")
+    elif text == '3*2':
+        response ="END Midwife available is Ms.Veronica. Contact info: +25473456789"
+        send_sms(phone_number, "Midwife available is Ms.Veronica. Contact info: +25473456789")
 
     # Default response for invalid input
     else:
